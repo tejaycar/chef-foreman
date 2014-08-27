@@ -30,9 +30,6 @@ use_inline_resources
 
 action :run do
   tmp_dir = ::File.join(Chef::Config[:file_cache_path], 'foreman')
-  FileUtils.rm_rf tmp_dir
-  FileUtils.mkdir_p tmp_dir
-
   format = new_resource.format.to_s
   location = new_resource.location
 
@@ -55,9 +52,12 @@ action :run do
     fail "Missing the 'foreman' gem.  Use the 'foreman::default' recipe to install it first"
   end
 
-  cli = Foreman::CLI.new([format, tmp_dir], opts)
-  puts cli.inspect
-  cli.invoke(:export, [format, tmp_dir])
+  FileUtils.rm_rf tmp_dir
+  FileUtils.mkdir_p tmp_dir
+
+  Dir.chdir(new_resource.root) do
+    Foreman::CLI.new([format, tmp_dir], opts).invoke(:export, [format, tmp_dir])
+  end
 
   create_or_replace tmp_dir, location
 end
