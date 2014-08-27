@@ -1,0 +1,26 @@
+---
+
+driver_plugin: vagrant
+
+driver_config:
+  require_chef_omnibus: true
+  customize:
+    cpus: 2
+    memory: 1536
+    cpuexecutioncap: 75
+
+provisioner:
+  name: chef_zero
+  require_chef_omnibus: true
+  chef_omnibus_url: https://www.getchef.com/chef/install.sh
+
+platforms:
+  - name: ubuntu-12.04-base
+    driver_config:
+      box: opscode-ubuntu-12.04
+      box_url: http://opscode-vm-bento.s3.amazonaws.com/vagrant/virtualbox/opscode_ubuntu-12.04_chef-provisionerless.box
+
+suites:
+  - name: upstart
+    run_list:
+      - recipe[test-foreman::upstart]
