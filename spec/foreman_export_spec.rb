@@ -15,13 +15,14 @@ describe "foreman_export create" do
 
     let(:chef_run) do
       ChefSpec::Runner.new(
-        :step_into => %w( foreman_export ),
-        :log_level => :debug
+        :step_into => %w( foreman_export )
       ).converge('test-foreman::upstart')
     end
 
     it "creates the Init files" do
-      expect(chef_run).to render_file(init_file)
+      %w{ my_app my_app-also my_app-also-1 my_app-test my_app-test-1 my_app-test-2 my_app-test-3 }.each do |config|
+        expect(chef_run).to render_file("#{config}.conf")
+      end
     end
   end
 end

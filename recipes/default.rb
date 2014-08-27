@@ -4,5 +4,5 @@ chef_gem 'foreman' do
   action :install
 end
 
-# require 'foreman'
-# require 'foreman/cli'
+require 'foreman'
+require 'foreman/cli'

@@ -21,6 +21,6 @@ platforms:
       box_url: http://opscode-vm-bento.s3.amazonaws.com/vagrant/virtualbox/opscode_ubuntu-12.04_chef-provisionerless.box
 
 suites:
-  - name: upstart
+  - name: export
     run_list:
       - recipe[test-foreman::upstart]

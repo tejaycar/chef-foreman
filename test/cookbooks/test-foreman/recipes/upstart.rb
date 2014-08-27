@@ -7,18 +7,18 @@
 # All rights reserved - Do Not Redistribute
 #
 
-include_recipe 'foreman'
-
 app_root = '/tmp/test/root'
 
-directory app_root
+directory app_root do
+  recursive true
+end
 
 file ::File.join(app_root, '.env') do
   content "AA=BB\nCC=DD"
 end
 
 file ::File.join(app_root, 'Procfile') do
-  content 'test: run_my_command'
+  content "test: run_my_command\nalso: do this too"
 end
 
 directory '/tmp/test/foreman' do
@@ -29,7 +29,7 @@ user 'deploy'
 
 foreman_export 'my_app' do
   format :upstart
-  concurrency 'test' => 3
+  concurrency('test' => 3, 'also' => 1)
   log '/tmp/log'
   port 9000
   user 'deploy'

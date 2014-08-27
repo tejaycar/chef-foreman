@@ -38,7 +38,7 @@ action :run do
 
   opts = {}
   opts[:app] = new_resource.app
-  opts[:concurrency] = new_resource.concurrency.map{ |name, value| "{#{name}=#{value}" }.join(', ') if new_resource.concurrency
+  opts[:concurrency] = new_resource.concurrency.map{ |name, value| "#{name}=#{value}" }.join(',') if new_resource.concurrency
   opts[:log] = new_resource.log if new_resource.log
   opts[:port] = new_resource.port if new_resource.port
   opts[:template] = new_resource.template if new_resource.template
@@ -48,35 +48,35 @@ action :run do
   opts[:run] = new_resource.procfile if new_resource.procfile
   opts[:run] = new_resource.run if new_resource.run
 
-#   begin
-#     require 'foreman/cli'
-#   rescue LoadError
-#     fail "Missing the 'foreman' gem.  Use the 'foreman::default' recipe to install it first"
-#   end
-#
-#   install_gem('foreman', node[:foreman][:version], node[:foreman][:gem_source])
-#   Foreman::CLI.new([format, tmp_dir],opts).invoke_all
+  install_gem('foreman', node[:foreman][:version], node[:foreman][:gem_source])
+  begin
+    require 'foreman/cli'
+  rescue LoadError
+    fail "Missing the 'foreman' gem.  Use the 'foreman::default' recipe to install it first"
+  end
 
-  options = opts.map{ |key, value| "--#{key} #{value}" }.join(' ')
-  shell_out!("/opt/chef/embedded/bin/foreman export #{format} #{location} #{options}")
+  cli = Foreman::CLI.new([format, tmp_dir], opts)
+  puts cli.inspect
+  cli.invoke(:export, [format, tmp_dir])
 
-  create_or_replace tmp_dir
+  create_or_replace tmp_dir, location
 end
 
-def create_or_replace(tmp_dir)
+def create_or_replace(tmp_dir, destination)
   ::Dir.foreach(tmp_dir) do |file_name|
+    next if file_name == '.' || file_name == '..'
     puts ::File.join(tmp_dir,file_name)
-    temp_path = ::File.join(tmp_dir, file_name)
-    if ::File.file? temp_path
-      file ::File.join(location, file_name) do
+    tmp_path = ::File.join(tmp_dir, file_name)
+    if ::File.file? tmp_path
+      file ::File.join(destination, file_name) do
         content IO.read(tmp_path)
         owner new_resource.user if new_resource.user
       end
-    elsif ::File.directory? file_path
-      directory ::File.join(location, file_name) do
+    elsif ::File.directory? tmp_path
+      directory ::File.join(destination, file_name) do
         owner new_resource.user if new_resource.user
       end
-      create_or_replace(file_path)
+      create_or_replace(tmp_path, ::File.join(destination, file_name))
     end
   end
 end
