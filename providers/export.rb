@@ -39,7 +39,7 @@ action :run do
   opts[:log] = new_resource.log if new_resource.log
   opts[:port] = new_resource.port if new_resource.port
   opts[:template] = new_resource.template if new_resource.template
-  opts[:user] = new_resource.template if new_resource.template
+  opts[:user] = new_resource.user if new_resource.user
   opts[:root] = new_resource.root if new_resource.root
   opts[:env] = (new_resource.env.kind_of?(Array) ? new_resource.env.join(',') : new_resource.env) if new_resource.env
   opts[:run] = new_resource.procfile if new_resource.procfile
