@@ -18,7 +18,7 @@
 #
 
 if defined?(ChefSpec)
-  ChefSpec::Runner.define_runner_method :foreman_export
+  ChefSpec::Runner.define_matcher :foreman_export
   def run_foreman_export(app_name)
     ChefSpec::Matchers::ResourceMatcher.new(
       :foreman_export,
