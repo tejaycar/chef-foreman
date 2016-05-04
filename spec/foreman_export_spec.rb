@@ -14,7 +14,7 @@ describe "foreman_export create" do
     end
 
     let(:chef_run) do
-      ChefSpec::Runner.new(
+      ChefSpec::SoloRunner.new(
         :step_into => %w( foreman_export )
       ).converge('test-foreman::upstart')
     end
